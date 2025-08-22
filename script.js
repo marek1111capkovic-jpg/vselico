@@ -1,57 +1,8 @@
+//https://docs.google.com/spreadsheets/d/e/2PACX-1vQufNgszhNnNMG6lZ6Gs0NX_yRdrb32qsu5KIFw5eg0wEceZxxgbKSWoTpH8FrXhBc5UE_LTn2tVhs0/pub?output=csv
 // Produkty - v reálnom projekte by ste načítavali z databázy alebo API
-const products = [
-    {
-        id: 1,
-        title: "Vysávač",
-        price: 129.99,
-        category: "domacnost",
-        image: "images/product1.jpg",
-        description: "Výkonný vysávač pre vašu domácnosť."
-    },
-    {
-        id: 2,
-        title: "Kuchynský robot",
-        price: 89.99,
-        category: "domacnost",
-        image: "images/product2.jpg",
-        description: "Všestranný pomocník v kuchyni."
-    },
-    {
-        id: 3,
-        title: "Sada klúčov",
-        price: 24.99,
-        category: "naradie",
-        image: "images/product3.jpg",
-        description: "Kvalitná sada imbusových kľúčov."
-    },
-    {
-        id: 4,
-        title: "Vŕtačka",
-        price: 59.99,
-        category: "naradie",
-        image: "images/product4.jpg",
-        description: "Výkonná vŕtačka s akumulátorom."
-    },
-    {
-        id: 5,
-        title: "Model lietadla",
-        price: 19.99,
-        category: "hobby",
-        image: "images/product5.jpg",
-        description: "Stavebnica modelu lietadla."
-    },
-    {
-        id: 6,
-        title: "Farby na keramiku",
-        price: 14.99,
-        category: "hobby",
-        image: "images/product6.jpg",
-        description: "Sada farieb pre vaše umelecké projekty."
-    }
-];
-
 // Košík
 let cart = [];
+let products = []; // Prázdne pole, ktoré naplníme z API
 
 // DOM elementy
 const productContainer = document.getElementById('product-container');
@@ -63,44 +14,117 @@ const cartItemsContainer = document.getElementById('cart-items');
 const cartTotalPrice = document.getElementById('cart-total-price');
 const cartCount = document.querySelector('.cart-count');
 
-// Načítanie produktov
-function loadProducts(category = 'all') {
-    productContainer.innerHTML = '';
-    
-    const filteredProducts = category === 'all' 
-        ? products 
-        : products.filter(product => product.category === category);
-    
-    filteredProducts.forEach(product => {
-        const productElement = document.createElement('div');
-        productElement.className = 'product-card';
-        productElement.innerHTML = `
-            <img src="${product.image}" alt="${product.title}" class="product-image">
-            <div class="product-info">
-                <h3 class="product-title">${product.title}</h3>
-                <span class="product-category">${product.category}</span>
-                <p class="product-description">${product.description}</p>
-                <p class="product-price">${product.price.toFixed(2)} €</p>
-                <button class="add-to-cart" data-id="${product.id}">Pridať do košíka</button>
-            </div>
-        `;
-        productContainer.appendChild(productElement);
-    });
-    
-    // Pridanie event listenerov pre tlačidlá "Pridať do košíka"
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', addToCart);
-    });
+// Načítanie produktov z Google Sheets
+async function loadProducts(category = 'all') {
+    try {
+        // Zobrazenie načítavania
+        document.getElementById('loading').style.display = 'block';
+        productContainer.innerHTML = '';
+        
+        // URL vášho Google Sheets zverejneného ako CSV
+        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQufNgszhNnNMG6lZ6Gs0NX_yRdrb32qsu5KIFw5eg0wEceZxxgbKSWoTpH8FrXhBc5UE_LTn2tVhs0/pub?output=csv');
+        const csvData = await response.text();
+        
+        // Konverzia CSV na JSON
+        products = csvToJson(csvData);
+        
+        // Konverzia dátových typov
+        products = products.map(product => ({
+            id: parseInt(product.id),
+            title: product.nazov,
+            price: parseFloat(product.cena),
+            category: product.kategoria,
+            image: product.obrazok,
+            description: product.popisok,
+            stock: parseInt(product.pocet)
+        }));
+        
+        // Filtrovanie produktov
+        const filteredProducts = category === 'all' 
+            ? products 
+            : products.filter(product => product.category === category);
+        
+        // Skrytie načítavania
+        document.getElementById('loading').style.display = 'none';
+        
+        // Zobrazenie produktov
+        filteredProducts.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.className = 'product-card';
+            productElement.innerHTML = `
+                <img src="${product.image}" alt="${product.title}" class="product-image">
+                <div class="product-info">
+                    <h3 class="product-title">${product.title}</h3>
+                    <span class="product-category">${product.category}</span>
+                    <p class="product-description">${product.description}</p>
+                    <p class="product-price">${product.price.toFixed(2)} €</p>
+                    <p class="product-stock">Na sklade: ${product.stock} ks</p>
+                    <button class="add-to-cart" data-id="${product.id}" ${product.stock === 0 ? 'disabled' : ''}>
+                        ${product.stock === 0 ? 'Nie je na sklade' : 'Pridať do košíka'}
+                    </button>
+                </div>
+            `;
+            productContainer.appendChild(productElement);
+        });
+        
+        // Pridanie event listenerov pre tlačidlá "Pridať do košíka"
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', addToCart);
+        });
+        
+    } catch (error) {
+        console.error('Chyba pri načítavaní produktov:', error);
+        document.getElementById('loading').style.display = 'none';
+        productContainer.innerHTML = '<p>Produkty sa nepodarilo načítať. Skúste to prosím neskôr.</p>';
+    }
 }
 
-// Pridanie do košíka
+// Pomocná funkcia na konverziu CSV na JSON
+function csvToJson(csv) {
+    const lines = csv.split('\n').filter(line => line.trim() !== '');
+    if (lines.length < 2) return [];
+    
+    const result = [];
+    const headers = lines[0].split(',').map(header => header.trim());
+    
+    for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentline = lines[i].split(',').map(item => item.trim());
+        
+        for (let j = 0; j < headers.length; j++) {
+            if (j < currentline.length) {
+                obj[headers[j]] = currentline[j] || '';
+            } else {
+                obj[headers[j]] = '';
+            }
+        }
+        
+        // Pridáme iba neprázdne riadky
+        if (Object.values(obj).some(value => value !== '')) {
+            result.push(obj);
+        }
+    }
+    
+    return result;
+}
+
+// Pridanie do košíka s kontrolou dostupného množstva
 function addToCart(e) {
     const productId = parseInt(e.target.getAttribute('data-id'));
     const product = products.find(p => p.id === productId);
     
+    if (product.stock === 0) {
+        alert('Tento produkt nie je na sklade.');
+        return;
+    }
+    
     const existingItem = cart.find(item => item.id === productId);
     
     if (existingItem) {
+        if (existingItem.quantity >= product.stock) {
+            alert('Nie je dostatok tovaru na sklade.');
+            return;
+        }
         existingItem.quantity += 1;
     } else {
         cart.push({
@@ -174,6 +198,7 @@ function showCart() {
 }
 
 // Zmenšenie množstva
+// Zmenšenie množstva
 function decreaseQuantity(e) {
     const productId = parseInt(e.target.getAttribute('data-id'));
     const item = cart.find(item => item.id === productId);
@@ -188,10 +213,16 @@ function decreaseQuantity(e) {
     showCart();
 }
 
-// Zväčšenie množstva
+// Zväčšenie množstva s kontrolou dostupného množstva
 function increaseQuantity(e) {
     const productId = parseInt(e.target.getAttribute('data-id'));
     const item = cart.find(item => item.id === productId);
+    const product = products.find(p => p.id === productId);
+    
+    if (item.quantity >= product.stock) {
+        alert('Nie je dostatok tovaru na sklade.');
+        return;
+    }
     
     item.quantity += 1;
     

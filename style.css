@@ -1,7 +1,7 @@
 /* Základné štýly */
 :root {
-    --primary-color: #4a6fa5;
-    --secondary-color: #166088;
+    --primary-color: #0b8abd;
+    --secondary-color: #086a97;
     --accent-color: #4fc3f7;
     --light-color: #f8f9fa;
     --dark-color: #343a40;
@@ -221,6 +221,21 @@ main {
 .add-to-cart:hover {
     background-color: var(--secondary-color);
 }
+.add-to-cart:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.loading {
+    padding: 20px;
+    font-size: 18px;
+    color: #666;
+}
+
+.product-stock {
+    color: #28a745;
+    font-weight: bold;
+    margin: 5px 0;
+}
 
 /* O nás a kontakt */
 .about, .contact {
@@ -283,9 +298,9 @@ footer {
 
 .cart-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
     border-bottom: 1px solid #eee;
 }
 
@@ -293,7 +308,7 @@ footer {
     width: 60px;
     height: 60px;
     object-fit: cover;
-    border-radius: 5px;
+    margin-right: 15px;
 }
 
 .cart-item-info {
