@@ -310,11 +310,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (reserveBtn) {
         reserveBtn.addEventListener('click', function() {
-            // Ulož obsah košíka do localStorage alebo sessionStorage
+            // Ulož obsah košíka do sessionStorage
             const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            // Ulož produkty do sessionStorage pre rezervačnú stránku
-            sessionStorage.setItem('reservationProducts', JSON.stringify(cartItems));
+            sessionStorage.setItem('reservationCart', JSON.stringify(cartItems));
             
             // Zavri modálne okno
             cartModal.style.display = 'none';
