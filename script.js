@@ -302,3 +302,39 @@ function checkFlyerExists(url) {
         console.error('Chyba pri kontrole letáku: ', error);
     });
 }
+// Funkcionalita pre preklik na rezerváciu
+document.addEventListener('DOMContentLoaded', function() {
+    const reserveBtn = document.getElementById('reserve-in-store-btn');
+    const cartModal = document.getElementById('cart-modal');
+    const closeModal = document.querySelector('.close-modal');
+    
+    if (reserveBtn) {
+        reserveBtn.addEventListener('click', function() {
+            // Ulož obsah košíka do localStorage alebo sessionStorage
+            const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Ulož produkty do sessionStorage pre rezervačnú stránku
+            sessionStorage.setItem('reservationProducts', JSON.stringify(cartItems));
+            
+            // Zavri modálne okno
+            cartModal.style.display = 'none';
+            
+            // Presmeruj na rezervačnú stránku
+            window.location.href = 'rezervacia.html';
+        });
+    }
+    
+    // Zatvorenie modálneho okna
+    if (closeModal) {
+        closeModal.addEventListener('click', function() {
+            cartModal.style.display = 'none';
+        });
+    }
+    
+    // Zatvorenie modálneho okna pri kliknutí mimo neho
+    window.addEventListener('click', function(event) {
+        if (event.target === cartModal) {
+            cartModal.style.display = 'none';
+        }
+    });
+});

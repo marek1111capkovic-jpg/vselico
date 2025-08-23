@@ -597,3 +597,19 @@ footer {
         justify-content: center;
     }
 }
+.selected-products {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.selected-product-item {
+    border-bottom: 1px solid #eee;
+    padding: 1rem 0;
+}
+
+.selected-product-item:last-child {
+    border-bottom: none;
+}

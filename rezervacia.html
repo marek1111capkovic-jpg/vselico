@@ -319,6 +319,12 @@
         <div class="alert alert-error" id="error-message">
             Nastala chyba pri odosielaní rezervácie. Skúste to prosím neskôr.
         </div>
+        <section class="selected-products" id="selected-products-section" style="display: none;">
+            <h2>Vybrané produkty</h2>
+            <div class="selected-products-list" id="selected-products-list">
+                <!-- Produkty sa načítajú dynamicky -->
+            </div>
+        </section>
 
         <section class="product-selection" id="product-selection">
             <h2>Vyberte si produkt</h2>
@@ -549,6 +555,35 @@
                 }, 5000);
             }
         });
+         document.addEventListener('DOMContentLoaded', function() {
+        const selectedProductsSection = document.getElementById('selected-products-section');
+        const selectedProductsList = document.getElementById('selected-products-list');
+        
+        // Načítaj produkty z sessionStorage
+        const reservationProducts = JSON.parse(sessionStorage.getItem('reservationProducts')) || [];
+        
+        if (reservationProducts.length > 0) {
+            // Zobraz sekciu s vybranými produktami
+            selectedProductsSection.style.display = 'block';
+            
+            // Vypíš produkty
+            let productsHTML = '';
+            reservationProducts.forEach(product => {
+                productsHTML += `
+                    <div class="selected-product-item">
+                        <h3>${product.name}</h3>
+                        <p>Množstvo: ${product.quantity}</p>
+                        <p>Cena: ${(product.price * product.quantity).toFixed(2)} €</p>
+                    </div>
+                `;
+            });
+            
+            selectedProductsList.innerHTML = productsHTML;
+            
+            // Vymaž dáta z sessionStorage (voliteľné)
+            // sessionStorage.removeItem('reservationProducts');
+        }
+    });
     </script>
 </body>
 </html>
