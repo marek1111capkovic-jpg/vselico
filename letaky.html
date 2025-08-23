@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letáky - Všeličo</title>
+    <link rel="stylesheet" href="style.css"> <!-- Odkaz na váš hlavný CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="Všeličo logo" class="logo">
+            <h1>Všeličo</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Domov</a></li>
+                <li><a href="index.html#products">Produkty</a></li>
+                <li><a href="index.html#about">O nás</a></li>
+                <li><a href="index.html#contact">Kontakt</a></li>
+                <li><a href="letaky.html" class="active">Letáky</a></li>
+            </ul>
+        </nav>
+        <div class="cart-icon">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count">0</span>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <h1>Aktuálne letáky</h1>
+            <p>Prezrite si naše najnovšie letáky s výhodnými ponukami. Vyberte si ten, ktorý vás najviac zaujíma a objavte skvelé zľavy na produkty z nášho obchodu.</p>
+        </section>
+
+        <section class="flyers-container">
+            <div class="flyer-card">
+                <img src="images/letak-kin-sep.jpg" alt="Leták Kín-august" class="flyer-image">
+                <div class="flyer-info">
+                    <h3 class="flyer-title">Kinekus leták - August</h3>
+                    <p class="flyer-date">Platný do: 31.08.2023</p>
+                    <p class="flyer-description">Špeciálna ponuka kinekus produktov pre august. Nájdete tu výhodné ceny na elektroniku, doplnky a domáce potreby.</p>
+                    <div class="flyer-actions">
+                        <a href="letaky/letak-kin-sep.pdf" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-eye"></i> Pozrieť online
+                        </a>
+                        <a href="letaky/letak-kin-sep.pdf" class="btn btn-secondary" download>
+                            <i class="fas fa-download"></i> Stiahnuť
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flyer-card">
+                <img src="images/letak-sep.jpg" alt="Leták August" class="flyer-image">
+                <div class="flyer-info">
+                    <h3 class="flyer-title">Hlavný leták - August</h3>
+                    <p class="flyer-date">Platný do: 31.08.2023</p>
+                    <p class="flyer-description">Hlavný leták s augustovými výhodami. Ponúkame zľavy až 50% na vybraný tovar z kategórií domácnosť, náradie a hobby.</p>
+                    <div class="flyer-actions">
+                        <a href="letaky/letak-sep.pdf" class="btn btn-primary" target="_blank">
+                            <i class="fas fa-eye"></i> Pozrieť online
+                        </a>
+                        <a href="letaky/letak-sep.pdf" class="btn btn-secondary" download>
+                            <i class="fas fa-download"></i> Stiahnuť
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Všeličo. Všetky práva vyhradené.</p>
+    </footer>
+
+    <script>
+        // Jednoduchá funkcionalita pre počítadlo košíka
+        document.addEventListener('DOMContentLoaded', function() {
+            // Kontrola, či máme uložené položky v košíku
+            const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCount = document.querySelector('.cart-count');
+            
+            if (cartCount) {
+                // Spočítame celkový počet položiek v košíku
+                const totalCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = totalCount;
+            }
+        });
+    </script>
+</body>
+</html>

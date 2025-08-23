@@ -33,7 +33,6 @@ async function loadProducts(category = 'all') {
             id: parseInt(product.id),
             title: product.nazov,
             price: parseFloat(product.cena),
-            category: product.kategoria,
             image: product.obrazok,
             description: product.popisok,
             stock: parseInt(product.pocet)
@@ -273,3 +272,33 @@ document.addEventListener('DOMContentLoaded', () => {
     
     loadProducts();
 });
+
+// Pridanie funkcionality pre leták (voliteľné)
+document.addEventListener('DOMContentLoaded', function() {
+    const flyerLink = document.querySelector('.btn-flyer');
+    
+    if (flyerLink) {
+        // Sledovanie kliknutí na leták (pre analytické účely)
+        flyerLink.addEventListener('click', function() {
+            console.log('Používateľ si otvoril leták');
+            // Sem by ste mohli pridať kód pre analytics (Google Analytics, Facebook Pixel, atď.)
+            // napr.: gtag('event', 'letak_klik');
+        });
+        
+        // Kontrola existencie súboru letáku (voliteľné)
+        checkFlyerExists('letak.pdf');
+    }
+});
+
+// Funkcia na kontrolu existencie súboru letáku (voliteľné)
+function checkFlyerExists(url) {
+    fetch(url, { method: 'HEAD' })
+    .then(response => {
+        if (!response.ok) {
+            console.warn('Leták nebol nájdený na zadanom mieste: ' + url);
+        }
+    })
+    .catch(error => {
+        console.error('Chyba pri kontrole letáku: ', error);
+    });
+}
